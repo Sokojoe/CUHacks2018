@@ -1,0 +1,13 @@
+{
+  "name": "CUHacks2018",
+  "version": "1.0.0",
+  "description": "Alert Notification System for Martello",
+  "main": "index.js",
+  "repository": "https://github.com/Sokojoe/CUHacks2018.git",
+  "author": "Sokojoe <Sokojoey@gmail.com>",
+  "license": "None",
+  "private": false,
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
