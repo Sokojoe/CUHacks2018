@@ -58,10 +58,10 @@ var alerts = {};
 app.post('/acceptedAlert', function(req, res) {
   var alarmID = req.body.alarmID
   console.log(alarmID);
-  var adminID;
-  sysAdmins.forEach((admin) => {
-    if (admin.number == req.body.num) {
-      adminID = admin.userId;
+  var admin;
+  sysAdmins.forEach((a) => {
+    if (a.number == req.body.num) {
+      admin = a;
     }
   })
   var contains = false;
@@ -69,10 +69,20 @@ app.post('/acceptedAlert', function(req, res) {
     console.log(alarm.id, alarmID);
     if (alarm.id.toString() == alarmID) {
       contains = true;
+      axios.get("")
       axios.put("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" +
-        alarmID + "/updateTicketAndLabels/?user=" + adminID, {
+        alarmID + "/updateTicketAndLabels/?user=" + admin.userId, {
           headers: {
-            'Authorization': "Basic dGVhbTErZGVidWdAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
+            'Authorization': "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
+          },
+          body: {
+            ticket: {
+              assignee: {
+                GUID: admin.userId,
+                name: admin.name
+              },
+              status: "Assigned"
+            }
           }
         }).catch((err) => console.log(err))
     }
