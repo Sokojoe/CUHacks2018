@@ -79,7 +79,7 @@ app.post('/acceptedAlert', function(req, res) {
           }
         }
       }).catch((err) => {
-      console.log("Something went wrong when updating tickets.")
+      console.log(err)
     })
   } else {
     console.log('No pendingAlarms with ID ' + alarmID);
