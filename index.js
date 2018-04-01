@@ -74,13 +74,17 @@ app.post('/acceptedAlert', function(req, res) {
   if (contains == true) {
     // Assign a user to an alarm
     console.log('Server accepted the request(' + alarmID + ') from ' + req.body.num);
-     res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
+    res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
     axios.put("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" +
       alarmID + "/updateTicketAndLabels/?user=" + admin.userId, {
         headers: {
           Authorization: 'Basic c29rb2pvZXlAZ21haWwuY29tOnBpbmVhcHBsZQ=='
         },
         body: {
+          labelDiff: {
+            assignedLabels: 0,
+            unassignedLabels: 0,
+          }
           ticket: {
             assignee: {
               GUID: admin.userId,
