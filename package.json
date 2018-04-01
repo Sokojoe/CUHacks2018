@@ -7,6 +7,9 @@
   "author": "Sokojoe <Sokojoey@gmail.com>",
   "license": "None",
   "private": false,
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "axios": "^0.18.0",
     "express": "^4.16.3",
