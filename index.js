@@ -2,9 +2,7 @@ const express = require('express')
 const app = express()
 const axios = require('axios')
 app.use(express.json());
-const lib = require('lib')({
-  token: "FpBaXmJxDDHDcfHKlHPKQQVFr29ccs3JtIJh8yOKlp2wNWRsEN3s6MCN-9XqP8SY"
-});
+const lib = require('lib')({token: "FpBaXmJxDDHDcfHKlHPKQQVFr29ccs3JtIJh8yOKlp2wNWRsEN3s6MCN-9XqP8SY"});
 const tel = lib.messagebird.tel['@0.0.21'];
 
 const originalPhonenum = "12048170807"
@@ -16,22 +14,10 @@ app.get('/triggermock/:id', (req, res) => {
 })
 
 var sysAdmins = [] // Array of contacts
-sysAdmins.push({
-  number: "17058082706",
-  name: "Joey"
-});
-sysAdmins.push({
-  number: "14169488077",
-  name: "Wesley"
-});
-sysAdmins.push({
-  number: "16132553982",
-  name: "Helen"
-});
-sysAdmins.push({
-  number: "16132631474",
-  name: "Steven"
-});
+sysAdmins.push({number: "17058082706", name: "Joey"});
+sysAdmins.push({number: "14169488077", name: "Wesley"});
+sysAdmins.push({number: "16132553982", name: "Helen"});
+sysAdmins.push({number: "16132631474", name: "Steven"});
 
 var pendingAlarms = []; // Array of pendingAlarms
 // pendingAlarms.push({
@@ -49,27 +35,40 @@ var pendingAlarms = []; // Array of pendingAlarms
 //   }
 // });
 
-
 var alerts = {};
 
 app.post('/acceptedAlert', function(req, res) {
-  if (pendingAlarms.length > 0) {
+  let alarmID = req.body.alarmID
+  var contains = false;
+  pendingAlarms.forEach((alarm) => {
+    if (alarm.id == alarmID) {
+      contains = true;
+    }
+  })
+  if (contains) {
     // Assign a user to an alarm
-    console.log('Server accepted the request(' + req.body.alarmID + ') from ' + req.body.num);
-    res.send('Server accepted the request(' + req.body.alarmID + ') from ' + req.body.num);
+    console.log('Server accepted the request(' + alarmID + ') from ' + req.body.num);
+    res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
   } else {
-    console.log('No pendingAlarms');
-    res.send('No pendingAlarms');
+    console.log('No pendingAlarms with ID ' + alarmID);
+    res.send('No pendingAlarms with ID ' + alarmID);
   }
 });
 
 app.post('/deniedAlert', function(req, res) {
-  if (pendingAlarms.length > 0) {
-    console.log('Server denied the request(' + req.body.alarmID + ') from ' + req.body.num);
-    res.send('Server denied the request(' + req.body.alarmID + ') from ' + req.body.num);
+  let alarmID = req.body.alarmID
+  var contains = false;
+  pendingAlarms.forEach((alarm) => {
+    if (alarm.id == alarmID) {
+      contains = true;
+    }
+  })
+  if (contains) {
+    console.log('Server denied the request(' + alarmID + ') from ' + req.body.num);
+    res.send('Server denied the request(' + alarmID + ') from ' + req.body.num);
   } else {
-    console.log('No pendingAlarms');
-    res.send('No pendingAlarms');
+    console.log('No pendingAlarms with ID ' + alarmID);
+    res.send('No pendingAlarms with ID ' + alarmID);
   }
 });
 
@@ -110,28 +109,15 @@ var checkAlerts = () => {
 
 function handleAlert(alertData) {
   //console.log(alertData)
-  pendingAlarms.push({
-    id: alertData.id,
-    accepted: false,
-    mock: true,
-    data: alertData
-  })
+  pendingAlarms.push({id: alertData.id, accepted: false, mock: true, data: alertData})
   //sendAllAlert(pendingAlarms[0])
 }
 
 function sendAllAlert(pendingAlarm) {
   var alarmData = pendingAlarm.data
   sysAdmins.forEach((entry) => {
-    var message = "Alert: " + alarmData["text"] + "\n" +
-      "AlertId: " + alarmData["id"] + "\n" +
-      "Device: " + alarmData["device"]["name"] + "\n" +
-      "Severity: " + alarmData["severity"] + "\n\n" +
-      "Are you able to handle this task " + entry.name + " ?"
-    tel.sms({
-      originator: originalPhonenum,
-      recipient: entry.number,
-      body: message,
-    }).catch((err) => {
+    var message = "Alert: " + alarmData["text"] + "\n" + "AlertId: " + alarmData["id"] + "\n" + "Device: " + alarmData["device"]["name"] + "\n" + "Severity: " + alarmData["severity"] + "\n\n" + "Are you able to handle this task " + entry.name + " ?"
+    tel.sms({originator: originalPhonenum, recipient: entry.number, body: message}).catch((err) => {
       console.log(err);
     });
   })
