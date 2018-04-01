@@ -8,10 +8,11 @@ const tel = lib.messagebird.tel['@0.0.21'];
 const originalPhonenum = "12048170807"
 
 var sysAdmins = [] // Array of contacts
-sysAdmins.push({number: "17058082706", name: "idk"});
+sysAdmins.push({number: "17058082706", name: "JOEY"});
+sysAdmins.push({number: "14169488077", name: "WESLEY"});
 
 var pendingAlarms = []; // Array of pendingAlarms
-pendingAlarms.push({key: "12312", accepted: false, assigned: null}});
+pendingAlarms.push({id: "12312", accepted: false}});
 
 var alerts = {};
 
@@ -67,11 +68,12 @@ axios.get('https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-46
 });
 }
 
+// Add to arr
 function handleNewAlert(pendingAlarm, userPhone) {
 tel.sms({
   originator: originalPhonenum,
   recipient: userPhone,
-  body: "ALERT: " + pendingAlarm.ke.
+  body: "ALERT: " + pendingAlarm
 }).catch((err) => {
   console.log(err);
 });
