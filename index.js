@@ -61,7 +61,7 @@ app.post('/acceptedAlert', function(req, res) {
     console.log('Server accepted the request(' + alarmID + ') from ' + req.body.num);
     res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
     axios.put("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" +
-      alarmID + "/updateTicketAndLabels/?user=" + admin.userId, {
+      alarmID + "/updateTicketAndLabels/?user=1e389dd2-7569-4ca4-b890-6a311e0c46ee", {
         headers: {
           'Authorization': "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
         },
