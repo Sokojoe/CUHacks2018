@@ -84,7 +84,7 @@ app.post('/acceptedAlert', function(req, res) {
           labelDiff: {
             assignedLabels: 0,
             unassignedLabels: 0,
-          }
+          },
           ticket: {
             assignee: {
               GUID: admin.userId,
