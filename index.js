@@ -22,14 +22,13 @@ pendingAlarms.push({
   mock: true,
   data: {
     "mockid": {
-      "id":1,
-      "severity":"CRITAL",
+      "id": 1,
+      "severity": "CRITAL",
       "text": "Error, Servers have crashed!",
       "starttime": 1522430159279,
       "device": "MX 150 Server"
     }
   }
-}
 });
 
 var alerts = {};
@@ -88,12 +87,17 @@ var checkAlerts = () => {
 
 function handleAlert(alertData) {
   var key = Object.keys(alert)[0]
-  pendingAlarms.push({id:alertData[key], accepted: false, mock:true, data:alertData})
+  pendingAlarms.push({
+    id: alertData[key],
+    accepted: false,
+    mock: true,
+    data: alertData
+  })
 }
 
-function sendAllAlert(pendingAlarm){
+function sendAllAlert(pendingAlarm) {
   var message = "Test Message"
-  sysAdmins.forEach((entry)=>{
+  sysAdmins.forEach((entry) => {
     tel.sms({
       originator: originalPhonenum,
       recipient: entry.number,
