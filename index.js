@@ -69,27 +69,27 @@ app.post('/acceptedAlert', function(req, res) {
     console.log(alarm.id, alarmID);
     if (alarm.id.toString() == alarmID) {
       contains = true;
-      axios.put("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" +
-        alarmID + "/updateTicketAndLabels/?user=" + admin.userId, {
-          headers: {
-            Authorization: 'Basic c29rb2pvZXlAZ21haWwuY29tOnBpbmVhcHBsZQ=='
-          },
-          body: {
-            ticket: {
-              assignee: {
-                GUID: admin.userId,
-                name: admin.name
-              },
-              status: "Assigned"
-            }
-          }
-        }).catch((err) => console.log(err))
     }
   })
-  if (contains) {
+  if (contains == true) {
     // Assign a user to an alarm
     console.log('Server accepted the request(' + alarmID + ') from ' + req.body.num);
     res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
+    axios.put("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" +
+      alarmID + "/updateTicketAndLabels/?user=" + admin.userId, {
+        headers: {
+          Authorization: 'Basic c29rb2pvZXlAZ21haWwuY29tOnBpbmVhcHBsZQ=='
+        },
+        body: {
+          ticket: {
+            assignee: {
+              GUID: admin.userId,
+              name: admin.name
+            },
+            status: "Assigned"
+          }
+        }
+      }).catch((err) => console.log(err))
   } else {
     console.log('No pendingAlarms with ID ' + alarmID);
     res.send('No pendingAlarms with ID ' + alarmID);
