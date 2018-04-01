@@ -17,7 +17,11 @@ app.get('/triggermock', (req, res) => {
 var sysAdmins = [] // Array of contacts
 sysAdmins.push({
   number: "17058082706",
-  name: "idk"
+  name: "Joey"
+});
+sysAdmins.push({
+  number: "14169488077",
+  name: "Wesley"
 });
 
 var pendingAlarms = []; // Array of pendingAlarms
