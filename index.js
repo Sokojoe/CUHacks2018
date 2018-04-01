@@ -1,8 +1,13 @@
 const express = require('express')
 const app = express()
 const axios = require('axios')
+app.use(express.json());
 
 var alerts = {};
+app.post('/acceptedAlert', function (req, res) {
+  console.log(req.body.num + " has accepted the ticket.");
+  res.send('Server accepted the request from ' + req.body.num);
+})
 
 var servercode = () => {
   console.log('Server started on port 3000!')

@@ -5,6 +5,7 @@
   "author": "CUHacks3L1D <wesleykhma@gmail.com>",
   "main": "functions/__main__.js",
   "dependencies": {
+    "axios": "^0.18.0",
     "lib": "^3.0.1"
   },
   "private": true,
