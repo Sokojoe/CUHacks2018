@@ -14,5 +14,5 @@ module.exports = async (sender = '', receiver = '', message = '', createdDatetim
   // Callback to get active request info
   let res = await axios.post('https://fathomless-retreat-64446.herokuapp.com/deniedAlert', {"num": sender});
   console.log(res.data);
-  return send(receiver, sender, "You (" + sender + ") have denied the task.")
+  return send(receiver, sender, "You have accepted alarm(" + message.split(" ")[1] + ")")
 }

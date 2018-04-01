@@ -65,8 +65,8 @@ app.post('/acceptedAlert', function(req, res) {
 
 app.post('/deniedAlert', function(req, res) {
   if (pendingAlarms.length > 0) {
-    console.log('Server denied the request from ' + req.body.num);
-    res.send('Server denied the request from ' + req.body.num);
+    console.log('Server denied the request(' + req.body.alarmID + ') from ' + req.body.num);
+    res.send('Server denied the request(' + req.body.alarmID + ') from ' + req.body.num);
   } else {
     console.log('No pendingAlarms');
     res.send('No pendingAlarms');
