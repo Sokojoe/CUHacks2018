@@ -9,6 +9,11 @@ const tel = lib.messagebird.tel['@0.0.21'];
 
 const originalPhonenum = "12048170807"
 
+app.get('/triggermock', (req, res)=>{
+  sendAllAlert({})
+  res.send("Mock event triggered")
+})
+
 var sysAdmins = [] // Array of contacts
 sysAdmins.push({
   number: "17058082706",
@@ -55,7 +60,7 @@ app.post('/deniedAlert', function(req, res) {
 });
 
 var servercode = () => {
-  console.log('Server started on port 3000!')
+  console.log('Server started on port ' + app.get('port'))
   axios.get('https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarmList/', {
     headers: {
       'Authorization': "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
@@ -96,7 +101,7 @@ function handleAlert(alertData) {
 }
 
 function sendAllAlert(pendingAlarm) {
-  var message = "Test Message"
+  var message = "Alert: "
   sysAdmins.forEach((entry) => {
     tel.sms({
       originator: originalPhonenum,
