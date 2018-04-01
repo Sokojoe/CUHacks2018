@@ -69,7 +69,7 @@ app.post('/acceptedAlert', function(req, res) {
     console.log(alarm.id, alarmID);
     if (alarm.id.toString() == alarmID) {
       contains = true;
-      axios.post("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/"+ alarmID+"/updateTicketAndLabels/?user= " + adminID, {
+      axios.post("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/"+ alarmID+"/updateTicketAndLabels/?user=" + adminID, {
         headers: {
           'Authorization': "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
         }
