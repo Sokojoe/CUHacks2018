@@ -11,11 +11,11 @@ const send = require('../../helpers/send.js')
 * @returns {any}
 */
 module.exports = async (sender = '', receiver = '', message = '', createdDatetime = '', context) => {
+  // Callback to get active request info
+  // Callack to post response to node server
   return send(
     receiver,
     sender,
-    `This is the MORE handler for your MessageBird SMS handler on StdLib` +
-      `\n\n` +
-      `You can customize its behavior in /functions/messaging/more.js`
+    "You have denied the task. Your boss will be made aware of your incompetence."
   )
 }
