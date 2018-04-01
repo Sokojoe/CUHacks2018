@@ -2,40 +2,22 @@ const express = require('express')
 const app = express()
 const axios = require('axios')
 app.use(express.json());
-const lib = require('lib')({
-  token: "FpBaXmJxDDHDcfHKlHPKQQVFr29ccs3JtIJh8yOKlp2wNWRsEN3s6MCN-9XqP8SY"
-});
+const lib = require('lib')({token: "FpBaXmJxDDHDcfHKlHPKQQVFr29ccs3JtIJh8yOKlp2wNWRsEN3s6MCN-9XqP8SY"});
 const tel = lib.messagebird.tel['@0.0.21'];
 
 const originalPhonenum = "12048170807"
 
 app.get('/triggermock/:id', (req, res) => {
-  console.log("Mocking event " + req.params.id);
+  console.log(pendingAlarms[req.params.id]);
   sendAllAlert(pendingAlarms[req.params.id])
   res.send("Mock event triggered")
 })
 
 var sysAdmins = [] // Array of contacts
-sysAdmins.push({
-  number: "17058082706",
-  name: "Joey",
-  userId: "a07e4d8b-d64d-4551-80ec-1c7b592e08b0"
-});
-sysAdmins.push({
-  number: "14169488077",
-  name: "Wesley",
-  userId: "968a1d3c-1b88-4812-b15b-9a554324c7cf"
-});
-sysAdmins.push({
-  number: "16132553982",
-  name: "Helen",
-  userId: "68c4c1e5-8347-4327-8361-1e8fffd214d5",
-});
-sysAdmins.push({
-  number: "16132631474",
-  name: "Steven",
-  userId: "968a1d3c-1b88-4812-b15b-9a554324c7cf",
-});
+sysAdmins.push({number: "17058082706", name: "Joey"});
+sysAdmins.push({number: "14169488077", name: "Wesley"});
+sysAdmins.push({number: "16132553982", name: "Helen"});
+sysAdmins.push({number: "16132631474", name: "Steven"});
 
 var pendingAlarms = []; // Array of pendingAlarms
 // pendingAlarms.push({
@@ -56,40 +38,18 @@ var pendingAlarms = []; // Array of pendingAlarms
 var alerts = {};
 
 app.post('/acceptedAlert', function(req, res) {
-  var alarmID = req.body.alarmID
-  console.log(alarmID);
-  var admin;
-  sysAdmins.forEach((a) => {
-    if (a.number == req.body.num) {
-      admin = a;
-    }
-  })
+  let alarmID = req.body.alarmID
   var contains = false;
   pendingAlarms.forEach((alarm) => {
-    console.log(alarm.id, alarmID);
-    if (alarm.id.toString() == alarmID) {
+    if (alarm.id == alarmID) {
       contains = true;
     }
   })
-  if (contains == true) {
+  if (contains) {
     // Assign a user to an alarm
+
     console.log('Server accepted the request(' + alarmID + ') from ' + req.body.num);
-     res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
-    // axios.put("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" +
-    //   alarmID + "/updateTicketAndLabels/?user=" + admin.userId, {
-    //     headers: {
-    //       Authorization: 'Basic c29rb2pvZXlAZ21haWwuY29tOnBpbmVhcHBsZQ=='
-    //     },
-    //     body: {
-    //       ticket: {
-    //         assignee: {
-    //           GUID: admin.userId,
-    //           name: admin.name
-    //         },
-    //         status: "Assigned"
-    //       }
-    //     }
-    //   }).catch((err) => console.log(err))
+    res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
   } else {
     console.log('No pendingAlarms with ID ' + alarmID);
     res.send('No pendingAlarms with ID ' + alarmID);
@@ -100,7 +60,7 @@ app.post('/deniedAlert', function(req, res) {
   let alarmID = req.body.alarmID
   var contains = false;
   pendingAlarms.forEach((alarm) => {
-    if (alarm.id.toString() == alarmID) {
+    if (alarm.id == alarmID) {
       contains = true;
     }
   })
@@ -124,7 +84,7 @@ var servercode = () => {
       alerts[key] = response.data[key]
       handleAlert(response.data[key])
     })
-    setInterval(checkAlerts, 5000);
+    setInterval(checkAlerts, 10000);
   }).catch(function(error) {
     console.log(error);
   });
@@ -141,7 +101,6 @@ var checkAlerts = () => {
       if (alerts[key] == undefined) {
         console.log("New alarm discovered!" + response.data[key])
         handleAlert(response.data[key]);
-        sendAllAlert(pendingAlarm.slice(-1)[0])
       }
     }
   }).catch(function(error) {
@@ -151,29 +110,15 @@ var checkAlerts = () => {
 
 function handleAlert(alertData) {
   //console.log(alertData)
-  pendingAlarms.push({
-    id: alertData.id,
-    accepted: false,
-    mock: true,
-    data: alertData
-  })
+  pendingAlarms.push({id: alertData.id, accepted: false, mock: true, data: alertData})
   //sendAllAlert(pendingAlarms[0])
 }
 
 function sendAllAlert(pendingAlarm) {
   var alarmData = pendingAlarm.data
   sysAdmins.forEach((entry) => {
-    var message = "Alert: " + alarmData["text"] + "\n" +
-      "AlertId: " + alarmData["id"] + "\n" +
-      "Device: " + alarmData["device"]["name"] + "\n" +
-      "Severity: " + alarmData["severity"] + "\n\n" +
-      "Are you able to handle this task " + entry.name + " ?"
-    console.log("Sending Alarm to " + entry.name);
-    tel.sms({
-      originator: originalPhonenum,
-      recipient: entry.number,
-      body: message,
-    }).catch((err) => {
+    var message = "Alert: " + alarmData["text"] + "\n" + "AlertId: " + alarmData["id"] + "\n" + "Device: " + alarmData["device"]["name"] + "\n" + "Severity: " + alarmData["severity"] + "\n\n" + "Are you able to handle this task " + entry.name + " ?"
+    tel.sms({originator: originalPhonenum, recipient: entry.number, body: message}).catch((err) => {
       console.log(err);
     });
   })
