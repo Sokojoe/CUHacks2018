@@ -9,8 +9,8 @@ const tel = lib.messagebird.tel['@0.0.21'];
 
 const originalPhonenum = "12048170807"
 
-app.get('/triggermock', (req, res)=>{
-  sendAllAlert({})
+app.get('/triggermock', (req, res) => {
+  sendAllAlert(pendingAlarms[0])
   res.send("Mock event triggered")
 })
 
@@ -28,7 +28,7 @@ pendingAlarms.push({
   data: {
     "mockid": {
       "id": 1,
-      "severity": "CRITAL",
+      "severity": "CRITICAL",
       "text": "Error, Servers have crashed!",
       "starttime": 1522430159279,
       "device": "MX 150 Server"
@@ -101,7 +101,11 @@ function handleAlert(alertData) {
 }
 
 function sendAllAlert(pendingAlarm) {
-  var message = "Alert: "
+  var alarmData = pendingAlarm.data[Object.keys(pendingAlarm.data)[0]]
+  var message = "Alert: " + alarmData["text"] + "\n" +
+    "Device: " + alarmData["device"] + "\n" +
+    "Severity: " + alarmData["severity"] + "\n\n" +
+    "Are you able to handle this task?"
   sysAdmins.forEach((entry) => {
     tel.sms({
       originator: originalPhonenum,
