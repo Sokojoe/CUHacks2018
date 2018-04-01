@@ -8,14 +8,14 @@ const lib = require('lib')({ token: process.env.STDLIB_TOKEN })
 * @param {string} createdDatetime Datetime when the SMS was sent
 * @returns {any}
 */
-module.exports = async (sender = '', receiver = '', message = '_', createdDatetime = '', context) => {
+module.exports = async (sender = 'local', receiver = '', message = '_', createdDatetime = '', context) => {
   // Try to find a handler for the message, default to __notfound__
   let handler = message.toLowerCase().trim().replace(/[[^a-z0-9_]]/gi, '_') || '_'
   let result
   try {
-    if (message.match(/(accept|yes)(_*)[\d]+/gi) != null){
+    if (message.match(/( *)(accept)( *)(\d)+/gi) != null){
       handler = "accept";
-    } else if (message.match(/(deny|no)(_*)[\d]+/gi) != null) {
+    } else if (message.match(/( *)(deny)( *)(\d)+/gi) != null) {
       handler = "deny";
     }
     result = await lib[`${context.service.identifier}.messaging.${handler}`]({
@@ -28,7 +28,7 @@ module.exports = async (sender = '', receiver = '', message = '_', createdDateti
     // Catch thrown errors specifically so we can log them. See logs using
     // $ lib logs <username>.<service name> from the command line
     console.error(e)
-    return
+    return send(receiver, sender, "Error sending request to assign user(" + message.split(" ")[1] + ")")
   }
   return result
 }

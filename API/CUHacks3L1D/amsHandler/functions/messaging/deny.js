@@ -10,12 +10,12 @@ const axios = require('axios')
 * @param {string} createdDatetime Datetime when the SMS was sent
 * @returns {any}
 */
-module.exports = async (sender = '', receiver = '', message = '', createdDatetime = '', context) => {
+module.exports = async (sender = 'local', receiver = '', message = '', createdDatetime = '', context) => {
   // Callback to get active request info
   let res = await axios.post('https://fathomless-retreat-64446.herokuapp.com/deniedAlert', {
     "num": sender,
     "alarmID": message.split(" ")[1]
   });
   console.log(res.data);
-  return send(receiver, sender, "You have accepted alarm(" + message.split(" ")[1] + ")")
+  return send(receiver, sender, "You have denied alarm(" + message.split(" ")[1] + ")")
 }
