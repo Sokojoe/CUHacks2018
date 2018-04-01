@@ -8,16 +8,32 @@ const tel = lib.messagebird.tel['@0.0.21'];
 const originalPhonenum = "12048170807"
 
 app.get('/triggermock/:id', (req, res) => {
-  console.log(pendingAlarms[req.params.id]);
+  console.log("Mocking event " + req.params.id);
   sendAllAlert(pendingAlarms[req.params.id])
   res.send("Mock event triggered")
 })
 
 var sysAdmins = [] // Array of contacts
-sysAdmins.push({number: "17058082706", name: "Joey"});
-sysAdmins.push({number: "14169488077", name: "Wesley"});
-sysAdmins.push({number: "16132553982", name: "Helen"});
-sysAdmins.push({number: "16132631474", name: "Steven"});
+sysAdmins.push({
+  number: "17058082706",
+  name: "Joey",
+  userId:"a07e4d8b-d64d-4551-80ec-1c7b592e08b0"
+});
+sysAdmins.push({
+  number: "14169488077",
+  name: "Wesley",
+  userId:"968a1d3c-1b88-4812-b15b-9a554324c7cf"
+});
+sysAdmins.push({
+  number: "16132553982",
+  name: "Helen",
+  userId: "68c4c1e5-8347-4327-8361-1e8fffd214d5",
+});
+sysAdmins.push({
+  number: "16132631474",
+  name: "Steven",
+  userId: "968a1d3c-1b88-4812-b15b-9a554324c7cf",
+});
 
 var pendingAlarms = []; // Array of pendingAlarms
 // pendingAlarms.push({
@@ -83,7 +99,7 @@ var servercode = () => {
       alerts[key] = response.data[key]
       handleAlert(response.data[key])
     })
-    setInterval(checkAlerts, 10000);
+    setInterval(checkAlerts, 5000);
   }).catch(function(error) {
     console.log(error);
   });
@@ -100,6 +116,7 @@ var checkAlerts = () => {
       if (alerts[key] == undefined) {
         console.log("New alarm discovered!" + response.data[key])
         handleAlert(response.data[key]);
+        sendAllAlert(pendingAlarm.slice(-1)[0])
       }
     }
   }).catch(function(error) {
@@ -116,8 +133,17 @@ function handleAlert(alertData) {
 function sendAllAlert(pendingAlarm) {
   var alarmData = pendingAlarm.data
   sysAdmins.forEach((entry) => {
-    var message = "Alert: " + alarmData["text"] + "\n" + "AlertId: " + alarmData["id"] + "\n" + "Device: " + alarmData["device"]["name"] + "\n" + "Severity: " + alarmData["severity"] + "\n\n" + "Are you able to handle this task " + entry.name + " ?"
-    tel.sms({originator: originalPhonenum, recipient: entry.number, body: message}).catch((err) => {
+    var message = "Alert: " + alarmData["text"] + "\n" +
+      "AlertId: " + alarmData["id"] + "\n" +
+      "Device: " + alarmData["device"]["name"] + "\n" +
+      "Severity: " + alarmData["severity"] + "\n\n" +
+      "Are you able to handle this task " + entry.name + " ?"
+    console.log(message);
+    tel.sms({
+      originator: originalPhonenum,
+      recipient: entry.number,
+      body: message,
+    }).catch((err) => {
       console.log(err);
     });
   })
