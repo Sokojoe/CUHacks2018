@@ -10,12 +10,9 @@ const axios = require('axios')
 * @param {string} createdDatetime Datetime when the SMS was sent
 * @returns {any}
 */
-module.exports = async (sender = '14169488077', receiver = '', message = 'Default Msg', createdDatetime = '', context) => {
+module.exports = async (sender = '', receiver = '', message = '', createdDatetime = '', context) => {
   // Callback to get active request info
-  let res = await axios.post('http://localhost:3000/acceptedAlert', {"num": sender}).then(() => {
-    console.log(res.data);
-    return send(receiver, sender, "You (" + sender + ") have accepted the task.")
-  })
-});
-
+  let res = await axios.post('http://localhost:3000/acceptedAlert', {"num": sender});
+  console.log(res.data);
+  return send(receiver, sender, "You (" + sender + ") have accepted the task.")
 }

@@ -5,7 +5,12 @@ app.use(express.json());
 
 var alerts = {};
 app.post('/acceptedAlert', function (req, res) {
-  console.log(req.body.num + " has accepted the ticket.");
+  console.log(req.body.num + " has accepted the request.");
+  res.send('Server accepted the request from ' + req.body.num);
+})
+
+app.post('/deniedAlert', function (req, res) {
+  console.log(req.body.num + " has denied the request.");
   res.send('Server accepted the request from ' + req.body.num);
 })
 
