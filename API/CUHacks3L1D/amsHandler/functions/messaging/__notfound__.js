@@ -11,6 +11,6 @@ const send = require('../../helpers/send.js')
 * @returns {any}
 */
 module.exports = async (sender = '', receiver = '', message = '', createdDatetime = '', context) => {
-  return send(receiver, sender, "The response is invalid")
+  return send(receiver, sender, "The response is invalid\nEx. Accept <alarmID>")
   // }
 }
