@@ -9,8 +9,9 @@ const tel = lib.messagebird.tel['@0.0.21'];
 
 const originalPhonenum = "12048170807"
 
-app.get('/triggermock', (req, res) => {
-  sendAllAlert(pendingAlarms[0])
+app.get('/triggermock/:id', (req, res) => {
+  console.log(pendingAlarms[req.params.id]);
+  sendAllAlert(pendingAlarms[req.params.id])
   res.send("Mock event triggered")
 })
 
@@ -23,22 +24,31 @@ sysAdmins.push({
   number: "14169488077",
   name: "Wesley"
 });
+sysAdmins.push({
+  number: "16132553982",
+  name: "Helen"
+});
+sysAdmins.push({
+  number: "16132631474",
+  name: "Steven"
+});
 
 var pendingAlarms = []; // Array of pendingAlarms
-pendingAlarms.push({
-  id: "12312",
-  accepted: false,
-  mock: true,
-  data: {
-    "mockid": {
-      "id": 1,
-      "severity": "CRITICAL",
-      "text": "Error, Servers have crashed!",
-      "starttime": 1522430159279,
-      "device": "MX 150 Server"
-    }
-  }
-});
+// pendingAlarms.push({
+//   id: "12312",
+//   accepted: false,
+//   mock: true,
+//   data: {
+//       "id": 1,
+//       "severity": "CRITICAL",
+//       "text": "Error, Servers have crashed!",
+//       "starttime": 1522430159279,
+//       "device": {
+//         "name":"MX 150 Server",
+//       }
+//   }
+// });
+
 
 var alerts = {};
 
@@ -70,11 +80,15 @@ var servercode = () => {
       'Authorization': "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
     }
   }).then(function(response) {
-    Object.keys(response.data).map(key => alerts[key] = response.data[key])
+    Object.keys(response.data).map(key => {
+      alerts[key] = response.data[key]
+      handleAlert(response.data[key])
+    })
     setInterval(checkAlerts, 10000);
   }).catch(function(error) {
     console.log(error);
   });
+
 }
 
 var checkAlerts = () => {
@@ -95,22 +109,24 @@ var checkAlerts = () => {
 }
 
 function handleAlert(alertData) {
-  var key = Object.keys(alert)[0]
+  //console.log(alertData)
   pendingAlarms.push({
-    id: alertData[key],
+    id: alertData.id,
     accepted: false,
     mock: true,
     data: alertData
   })
+  //sendAllAlert(pendingAlarms[0])
 }
 
 function sendAllAlert(pendingAlarm) {
-  var alarmData = pendingAlarm.data[Object.keys(pendingAlarm.data)[0]]
-  var message = "Alert: " + alarmData["text"] + "\n" +
-    "Device: " + alarmData["device"] + "\n" +
-    "Severity: " + alarmData["severity"] + "\n\n" +
-    "Are you able to handle this task?"
+  var alarmData = pendingAlarm.data
   sysAdmins.forEach((entry) => {
+    var message = "Alert: " + alarmData["text"] + "\n" +
+      "AlertId: " + alarmData["id"] + "\n" +
+      "Device: " + alarmData["device"]["name"] + "\n" +
+      "Severity: " + alarmData["severity"] + "\n\n" +
+      "Are you able to handle this task " + entry.name + " ?"
     tel.sms({
       originator: originalPhonenum,
       recipient: entry.number,
