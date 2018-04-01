@@ -2,7 +2,9 @@ const express = require('express')
 const app = express()
 const axios = require('axios')
 app.use(express.json());
-const lib = require('lib')({token: "FpBaXmJxDDHDcfHKlHPKQQVFr29ccs3JtIJh8yOKlp2wNWRsEN3s6MCN-9XqP8SY"});
+const lib = require('lib')({
+  token: "FpBaXmJxDDHDcfHKlHPKQQVFr29ccs3JtIJh8yOKlp2wNWRsEN3s6MCN-9XqP8SY"
+});
 const tel = lib.messagebird.tel['@0.0.21'];
 
 const originalPhonenum = "12048170807"
@@ -17,12 +19,12 @@ var sysAdmins = [] // Array of contacts
 sysAdmins.push({
   number: "17058082706",
   name: "Joey",
-  userId:"a07e4d8b-d64d-4551-80ec-1c7b592e08b0"
+  userId: "a07e4d8b-d64d-4551-80ec-1c7b592e08b0"
 });
 sysAdmins.push({
   number: "14169488077",
   name: "Wesley",
-  userId:"968a1d3c-1b88-4812-b15b-9a554324c7cf"
+  userId: "968a1d3c-1b88-4812-b15b-9a554324c7cf"
 });
 sysAdmins.push({
   number: "16132553982",
@@ -54,11 +56,24 @@ var pendingAlarms = []; // Array of pendingAlarms
 var alerts = {};
 
 app.post('/acceptedAlert', function(req, res) {
-  let alarmID = req.body.alarmID
+  var alarmID = req.body.alarmID
+  console.log(alarmID);
+  var adminID;
+  sysAdmins.forEach((admin) => {
+    if (admin.number == req.body.num) {
+      adminID = admin.userId;
+    }
+  })
   var contains = false;
   pendingAlarms.forEach((alarm) => {
+    console.log(alarm.id, alarmID);
     if (alarm.id == alarmID) {
       contains = true;
+      axios.post("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/27/updateTicketAndLabels/?user= " + adminID, {
+        headers: {
+          'Authorization': "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
+        }
+      }.catch((err) => console.log(err)))
     }
   })
   if (contains) {
@@ -126,7 +141,12 @@ var checkAlerts = () => {
 
 function handleAlert(alertData) {
   //console.log(alertData)
-  pendingAlarms.push({id: alertData.id, accepted: false, mock: true, data: alertData})
+  pendingAlarms.push({
+    id: alertData.id,
+    accepted: false,
+    mock: true,
+    data: alertData
+  })
   //sendAllAlert(pendingAlarms[0])
 }
 
