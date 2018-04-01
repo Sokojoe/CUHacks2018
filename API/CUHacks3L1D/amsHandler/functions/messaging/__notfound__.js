@@ -1,8 +1,6 @@
 const lib = require('lib')({token: process.env.STDLIB_TOKEN})
 const send = require('../../helpers/send.js')
 
-const DEMO_REGEX = /^\s*what\s*do\s*you\s*think\s*of\s*([^\s\?]*)\s*.*$/gi
-
 /**
 * Not found handler - handles all SMS that don't match a command
 *   (i.e. "more" = functions/messaging/more.js)
@@ -13,17 +11,6 @@ const DEMO_REGEX = /^\s*what\s*do\s*you\s*think\s*of\s*([^\s\?]*)\s*.*$/gi
 * @returns {any}
 */
 module.exports = async (sender = '', receiver = '', message = '', createdDatetime = '', context) => {
-  // if (message.match(DEMO_REGEX)) {
-  //    We matched some regex
-  //   let matches = new RegExp(DEMO_REGEX).exec(message)
-  //   let item = matches[1].toLowerCase()
-  //   return send(
-  //     receiver,
-  //     sender,
-  //     `I don't like ${item}. It's coarse and rough and irritating and it gets everywhere`
-  //   )
-  // } else {
-  // We didn't find a command or match anything
-  return send(receiver, sender, "There are no active requests.")
+  return send(receiver, sender, "The response is invalid")
   // }
 }
