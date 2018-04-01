@@ -69,11 +69,12 @@ app.post('/acceptedAlert', function(req, res) {
     console.log(alarm.id, alarmID);
     if (alarm.id.toString() == alarmID) {
       contains = true;
-      axios.post("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/"+ alarmID+"/updateTicketAndLabels/?user=" + adminID, {
-        headers: {
-          'Authorization': "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
-        }
-      }).catch((err) => console.log(err))
+      axios.put("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" +
+        alarmID + "/updateTicketAndLabels/?user=" + adminID, {
+          headers: {
+            'Authorization': "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
+          }
+        }).catch((err) => console.log(err))
     }
   })
   if (contains) {
@@ -158,7 +159,7 @@ function sendAllAlert(pendingAlarm) {
       "Device: " + alarmData["device"]["name"] + "\n" +
       "Severity: " + alarmData["severity"] + "\n\n" +
       "Are you able to handle this task " + entry.name + " ?"
-    console.log(message);
+    console.log("Sending Alarm to " + entry.name);
     tel.sms({
       originator: originalPhonenum,
       recipient: entry.number,
