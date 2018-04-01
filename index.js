@@ -38,20 +38,6 @@ sysAdmins.push({
 });
 
 var pendingAlarms = []; // Array of pendingAlarms
-// pendingAlarms.push({
-//   id: "12312",
-//   accepted: false,
-//   mock: true,
-//   data: {
-//       "id": 1,
-//       "severity": "CRITICAL",
-//       "text": "Error, Servers have crashed!",
-//       "starttime": 1522430159279,
-//       "device": {
-//         "name":"MX 150 Server",
-//       }
-//   }
-// });
 
 var alerts = {};
 
@@ -66,7 +52,6 @@ app.post('/acceptedAlert', function(req, res) {
   })
   var contains = false;
   pendingAlarms.forEach((alarm) => {
-    console.log(alarm.id, alarmID);
     if (alarm.id.toString() == alarmID) {
       contains = true;
     }
@@ -93,7 +78,7 @@ app.post('/acceptedAlert', function(req, res) {
             status: "Assigned"
           }
         }
-      })
+      }).catch((err)=>console.log("Something went wrong when updating tickets.");)
   } else {
     console.log('No pendingAlarms with ID ' + alarmID);
     res.send('No pendingAlarms with ID ' + alarmID);
