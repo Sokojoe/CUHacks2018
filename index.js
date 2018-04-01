@@ -2,6 +2,23 @@ const express = require('express')
 const app = express()
 const axios = require('axios')
 app.use(express.json());
+const lib = require('lib')({
+  token: "FpBaXmJxDDHDcfHKlHPKQQVFr29ccs3JtIJh8yOKlp2wNWRsEN3s6MCN-9XqP8SY"
+});
+const tel = lib.messagebird.tel['@0.0.21'];
+
+const originalPhonenum = "12048170807"
+
+var sysAdmins = {
+  "17058082706":"idk"
+}
+
+var pendingAlarms = {
+  "12312":{
+    accepted:false,
+    assigned: null,
+  }
+}
 
 var alerts = {};
 app.post('/acceptedAlert', function (req, res) {
@@ -22,8 +39,8 @@ var servercode = () => {
       }
     })
     .then(function(response) {
-      Object.keys(response.data).map(key => alerts[key]=response.data[key])
-      setInterval(checkAlerts, 5000);
+      Object.keys(response.data).map(key => alerts[key] = response.data[key])
+      setInterval(checkAlerts, 10000);
     })
     .catch(function(error) {
       console.log(error);
@@ -37,20 +54,28 @@ var checkAlerts = () => {
       }
     })
     .then(function(response) {
-      var NewEvent = false
-      for (var key in response.data){
-        if (alerts[key] == undefined){
+      for (var key in response.data) {
+        if (alerts[key] == undefined) {
           console.log("New alarm discovered!" + response.data[key])
-          NewEvent = true
+          handleNewAlert(key);
         }
-      }
-      if (NewEvent == false){
-        console.log("No New Alerts. Everything is working well!");
       }
     })
     .catch(function(error) {
       console.log(error);
     });
 }
+
+function handleNewAlert(pendingAlarm, userPhone) {
+  tel.sms({
+    originator: originalPhonenum,
+    recipient: userPhone,
+    body: "If we ever see this text then our project is making really good progress"
+  }).catch((err) => {
+    console.log(err);
+  });
+}
+
+handleNewAlert("", "17058082706")
 
 app.listen(3000, servercode)
