@@ -76,6 +76,6 @@ function handleNewAlert(pendingAlarm, userPhone) {
   });
 }
 
-handleNewAlert("", "17058082706")
+app.set('port', (process.env.PORT || 3000));
 
-app.listen(3000, servercode)
+app.listen(app.get('port'), servercode)
