@@ -90,7 +90,7 @@ app.post('/deniedAlert', function(req, res) {
   let alarmID = req.body.alarmID
   var contains = false;
   pendingAlarms.forEach((alarm) => {
-    if (alarm.id == alarmID) {
+    if (alarm.id.toString() == alarmID) {
       contains = true;
     }
   })
