@@ -12,7 +12,7 @@ const axios = require('axios')
 */
 module.exports = async (sender = '', receiver = '', message = '', createdDatetime = '', context) => {
   // Callback to get active request info
-  let res = await axios.post('http://localhost:3000/acceptedAlert', {"num": sender});
+  let res = await axios.post('https://fathomless-retreat-64446.herokuapp.com/acceptedAlert', {"num": sender});
   console.log(res.data);
   return send(receiver, sender, "You (" + sender + ") have accepted the task.")
 }
