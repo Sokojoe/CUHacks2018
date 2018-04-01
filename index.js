@@ -67,7 +67,7 @@ app.post('/acceptedAlert', function(req, res) {
   var contains = false;
   pendingAlarms.forEach((alarm) => {
     console.log(alarm.id, alarmID);
-    if (alarm.id == alarmID) {
+    if (alarm.id.toString() == alarmID) {
       contains = true;
       axios.post("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/27/updateTicketAndLabels/?user= " + adminID, {
         headers: {
