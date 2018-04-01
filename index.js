@@ -78,7 +78,7 @@ app.post('/acceptedAlert', function(req, res) {
     axios.put("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" +
       alarmID + "/updateTicketAndLabels/?user=" + admin.userId, {
         headers: {
-          Authorization: 'Basic c29rb2pvZXlAZ21haWwuY29tOnBpbmVhcHBsZQ=='
+          'Authorization': "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
         },
         body: {
           labelDiff: {
