@@ -93,7 +93,7 @@ app.post('/acceptedAlert', function(req, res) {
             status: "Assigned"
           }
         }
-      }).catch((err) => console.log(err))
+      })
   } else {
     console.log('No pendingAlarms with ID ' + alarmID);
     res.send('No pendingAlarms with ID ' + alarmID);
