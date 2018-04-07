@@ -4,7 +4,6 @@ const axios = require('axios')
 app.use(express.json());
 const lib = require('lib')({token: "FpBaXmJxDDHDcfHKlHPKQQVFr29ccs3JtIJh8yOKlp2wNWRsEN3s6MCN-9XqP8SY"});
 const tel = lib.messagebird.tel['@0.0.21'];
-
 const originalPhonenum = "12048170807"
 
 app.get('/triggermock/:id', (req, res) => {
