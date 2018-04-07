@@ -5,8 +5,6 @@ app.use(express.json());
 const lib = require('lib')({token: "FpBaXmJxDDHDcfHKlHPKQQVFr29ccs3JtIJh8yOKlp2wNWRsEN3s6MCN-9XqP8SY"});
 const tel = lib.messagebird.tel['@0.0.21'];
 const originalPhonenum = "12048170807"
-app.set('port', (process.env.PORT || 3000));
-app.listen(app.get('port'), servercode)
 
 app.get('/triggermock/:id', (req, res) => {
   console.log(pendingAlarms[req.params.id]);
@@ -128,7 +126,6 @@ var servercode = () => {
   }).catch(function(error) {
     console.log(error);
   });
-
 }
 
 var checkAlerts = () => {
@@ -163,3 +160,6 @@ function sendAllAlert(pendingAlarm) {
     })
   })
 }
+
+app.set('port', (process.env.PORT || 3000));
+app.listen(app.get('port'), servercode)
