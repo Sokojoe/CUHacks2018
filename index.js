@@ -5,6 +5,8 @@ app.use(express.json());
 const lib = require('lib')({token: "FpBaXmJxDDHDcfHKlHPKQQVFr29ccs3JtIJh8yOKlp2wNWRsEN3s6MCN-9XqP8SY"});
 const tel = lib.messagebird.tel['@0.0.21'];
 const originalPhonenum = "12048170807"
+app.set('port', (process.env.PORT || 3000));
+app.listen(app.get('port'), servercode)
 
 app.get('/triggermock/:id', (req, res) => {
   console.log(pendingAlarms[req.params.id]);
@@ -13,51 +15,82 @@ app.get('/triggermock/:id', (req, res) => {
 })
 
 var sysAdmins = [] // Array of contacts
-sysAdmins.push({number: "17058082706", name: "Joey", guid: "a07e4d8b-d64d-4551-80ec-1c7b592e08b0"});
-sysAdmins.push({number: "14169488077", name: "Wesley", guid: "f0698f82-2b30-4d97-bc9c-b22cc368a4dc"});
-sysAdmins.push({number: "16132553982", name: "Helen", guid: "68c4c1e5-8347-4327-8361-1e8fffd214d5"});
-sysAdmins.push({number: "16132631474", name: "Steven", guid: "968a1d3c-1b88-4812-b15b-9a554324c7cf"});
+sysAdmins.push({
+  "17058082706": {
+    number: "17058082706",
+    name: "Joey",
+    guid: "a07e4d8b-d64d-4551-80ec-1c7b592e08b0"
+  }
+});
+sysAdmins.push({
+  "14169488077": {
+    number: "14169488077",
+    name: "Wesley",
+    guid: "f0698f82-2b30-4d97-bc9c-b22cc368a4dc"
+  }
+});
+sysAdmins.push({
+  "16132553982": {
+    number: "16132553982",
+    name: "Helen",
+    guid: "68c4c1e5-8347-4327-8361-1e8fffd214d5"
+  }
+});
+sysAdmins.push({
+  "16132631474": {
+    number: "16132631474",
+    name: "Steven",
+    guid: "968a1d3c-1b88-4812-b15b-9a554324c7cf"
+  }
+});
 
 var pendingAlarms = []; // Array of pendingAlarms
 
 var alerts = {};
 
 app.post('/acceptedAlert', function(req, res) {
-  let alarmID = req.body.alarmID
+  var alarmID = req.body.alarmID
   var contains = false;
   pendingAlarms.forEach((alarm) => {
     if (alarm.id.toString() == alarmID) {
-    if (alarm.id == alarmID) {
-      contains = true;
+      if (alarm.id == alarmID) {
+        contains = true;
+      }
     }
   })
   if (contains) {
-    // Assign a user to an alarm
+    //Get sysAdmin info
+    var currRecipient = sysAdmins[req.body.num]
 
-    console.log('Server accepted the request(' + alarmID + ') from ' + req.body.num);
-    res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
-    axios.put("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" +
-      alarmID + "/updateTicketAndLabels/?user=1e389dd2-7569-4ca4-b890-6a311e0c46ee", {
-        headers: {
-          'Authorization': "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
-        },
-        body: {
-          labelDiff: {
-            assignedLabels: 0,
-            unassignedLabels: 0,
+    // Assign a user to an alarm
+    axios.put("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" + alarmID + "/updateTicketAndLabels/?user=3c91a75a-ce56-4f89-82b8-bdff12bfcbd1", {
+      headers: {
+        "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU=",
+        "Content-Type": "application/json"
+      },
+      body: {
+        "ticket": {
+          "status": "Assigned",
+          "assignee": {
+            "name": currRecipient.name,
+            "GUID": currRecipient.guid
           },
-          ticket: {
-            assignee: {
-              GUID: admin.userId,
-              name: admin.name
-            },
-            status: "Assigned"
+          "ticketinfo": {
+            "URL": "",
+            "number": ""
           }
+        },
+        "labelDiff": {
+          "unassignedLabels": [],
+          "assignedLabels": []
         }
-      }).catch((err) => {
+      }
+    }).then(() => {
+      res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
+    }).catch((err) => {
       console.log(err)
-    })
-    res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
+    });
+
   } else {
     console.log('No pendingAlarms with ID ' + alarmID);
     res.send('No pendingAlarms with ID ' + alarmID);
@@ -131,7 +164,3 @@ function sendAllAlert(pendingAlarm) {
     });
   })
 }
-
-app.set('port', (process.env.PORT || 3000));
-
-app.listen(app.get('port'), servercode)
