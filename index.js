@@ -29,20 +29,20 @@ sysAdmins.push({
     guid: "f0698f82-2b30-4d97-bc9c-b22cc368a4dc"
   }
 });
-sysAdmins.push({
-  "16132553982": {
-    number: "16132553982",
-    name: "Helen",
-    guid: "68c4c1e5-8347-4327-8361-1e8fffd214d5"
-  }
-});
-sysAdmins.push({
-  "16132631474": {
-    number: "16132631474",
-    name: "Steven",
-    guid: "968a1d3c-1b88-4812-b15b-9a554324c7cf"
-  }
-});
+// sysAdmins.push({
+//   "16132553982": {
+//     number: "16132553982",
+//     name: "Helen",
+//     guid: "68c4c1e5-8347-4327-8361-1e8fffd214d5"
+//   }
+// });
+// sysAdmins.push({
+//   "16132631474": {
+//     number: "16132631474",
+//     name: "Steven",
+//     guid: "968a1d3c-1b88-4812-b15b-9a554324c7cf"
+//   }
+// });
 
 var pendingAlarms = []; // Array of pendingAlarms
 
@@ -161,6 +161,6 @@ function sendAllAlert(pendingAlarm) {
     var message = "Alert: " + alarmData["text"] + "\n" + "AlertId: " + alarmData["id"] + "\n" + "Device: " + alarmData["device"]["name"] + "\n" + "Severity: " + alarmData["severity"] + "\n\n" + "Are you able to handle this task " + entry.name + " ?"
     tel.sms({originator: originalPhonenum, recipient: entry.number, body: message}).catch((err) => {
       console.log(err);
-    });
+    })
   })
 }
