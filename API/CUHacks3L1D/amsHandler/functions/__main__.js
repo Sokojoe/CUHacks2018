@@ -13,9 +13,9 @@ module.exports = async (sender = 'local', receiver = '', message = '_', createdD
   let handler = message.toLowerCase().trim().replace(/[[^a-z0-9_]]/gi, '_') || '_'
   let result
   try {
-    if (message.match(/( *)(accept)( *)(\d)+/gi) != null){
+    if (message.match(/( *)(accept|yes)( *)(\d)+/gi) != null){
       handler = "accept";
-    } else if (message.match(/( *)(deny)( *)(\d)+/gi) != null) {
+    } else if (message.match(/( *)(deny|no)( *)(\d)+/gi) != null) {
       handler = "deny";
     }
     result = await lib[`${context.service.identifier}.messaging.${handler}`]({
