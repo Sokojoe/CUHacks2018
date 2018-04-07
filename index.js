@@ -52,10 +52,9 @@ app.post('/acceptedAlert', function(req, res) {
   var alarmID = req.body.alarmID
   var contains = false;
   pendingAlarms.forEach((alarm) => {
+    console.log("Comparing:" + alarm.id.toString() + ":" + alarmID);
     if (alarm.id.toString() == alarmID) {
-      if (alarm.id == alarmID) {
         contains = true;
-      }
     }
   })
   if (contains) {
