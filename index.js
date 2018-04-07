@@ -13,10 +13,10 @@ app.get('/triggermock/:id', (req, res) => {
 })
 
 var sysAdmins = [] // Array of contacts
-sysAdmins.push({number: "17058082706", name: "Joey"});
-sysAdmins.push({number: "14169488077", name: "Wesley"});
-sysAdmins.push({number: "16132553982", name: "Helen"});
-sysAdmins.push({number: "16132631474", name: "Steven"});
+sysAdmins.push({number: "17058082706", name: "Joey", guid: "a07e4d8b-d64d-4551-80ec-1c7b592e08b0"});
+sysAdmins.push({number: "14169488077", name: "Wesley", guid: "f0698f82-2b30-4d97-bc9c-b22cc368a4dc"});
+sysAdmins.push({number: "16132553982", name: "Helen", guid: "68c4c1e5-8347-4327-8361-1e8fffd214d5"});
+sysAdmins.push({number: "16132631474", name: "Steven", guid: "968a1d3c-1b88-4812-b15b-9a554324c7cf"});
 
 var pendingAlarms = []; // Array of pendingAlarms
 
