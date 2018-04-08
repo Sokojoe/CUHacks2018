@@ -61,30 +61,29 @@ app.post('/acceptedAlert', function(req, res) {
     var currRecipient = sysAdmins[req.body.num]
     console.log(currRecipient);
     // Assign a user to an alarm
-    // axios.put("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" + alarmID + "/updateTicketAndLabels/?user=3c91a75a-ce56-4f89-82b8-bdff12bfcbd1", {
-    //   headers: {
-    //     "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU=",
-    //     "Content-Type": "application/json"
-    //   },
-    //   data: {
-    //     "ticket": {
-    //       "status": "Assigned",
-    //       "assignee": {
-    //         "name": currRecipient.name,
-    //         "GUID": currRecipient.guid
-    //       },
-    //       "ticketinfo": {
-    //         "URL": "",
-    //         "number": ""
-    //       }
-    //     },
-    //     "labelDiff": {
-    //       "unassignedLabels": [],
-    //       "assignedLabels": []
-    //     }
-    //   }
-    // })
-
+    axios.put("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" + alarmID + "/updateTicketAndLabels/?user=3c91a75a-ce56-4f89-82b8-bdff12bfcbd1", {
+      headers: {
+        "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU=",
+        "Content-Type": "application/json"
+      },
+      data: {
+        "ticket": {
+          "status": "Assigned",
+          "assignee": {
+            "name": currRecipient.name,
+            "GUID": currRecipient.guid
+          },
+          "ticketinfo": {
+            "URL": "",
+            "number": ""
+          }
+        },
+        "labelDiff": {
+          "unassignedLabels": [],
+          "assignedLabels": []
+        }
+      }
+    })
     .then(() => {
       res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
     }).catch((err) => {
@@ -116,31 +115,38 @@ app.post('/deniedAlert', function(req, res) {
 
 var servercode = () => {
   console.log('Server started on port ' + app.get('port'))
-  axios.get('https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarmList/', {
+  request({
+    url: 'https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarmList/',
+    method: "GET",
+    json: true,
     headers: {
-      'Authorization': "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
-    }
+      "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU=",
+    },
   }).then(function(response) {
-    Object.keys(response.data).map(key => {
-      alerts[key] = response.data[key]
-      handleAlert(response.data[key])
-    })
-    setInterval(checkAlerts, 10000);
+    Object.keys(response).map(key => {
+       console.log(response[key]);
+       alerts[key] = response[key]
+       handleAlert(response[key])
+     })
+     setInterval(checkAlerts, 10000);
   }).catch(function(error) {
     console.log(error);
   });
 }
 
 var checkAlerts = () => {
-  axios.get('https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarmList/', {
+  request({
+    url: 'https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarmList/',
+    method: "GET",
+    json: true,
     headers: {
-      'Authorization': "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
-    }
+      "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU=",
+    },
   }).then(function(response) {
-    for (var key in response.data) {
+    for (var key in response) {
       if (alerts[key] == undefined) {
-        console.log("New alarm discovered!" + response.data[key])
-        handleAlert(response.data[key]);
+        console.log("New alarm discovered!" + response[key])
+        handleAlert(response[key]);
       }
     }
   }).catch(function(error) {
@@ -175,30 +181,3 @@ function sendAllAlert(pendingAlarm) {
 
 app.set('port', (process.env.PORT || 3000));
 app.listen(app.get('port'), servercode)
-
-axios("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/27/updateTicketAndLabels/?user=3c91a75a-ce56-4f89-82b8-bdff12bfcbd1", {
-  "ticket": {
-    "status": "Assigned",
-    "assignee": {
-      "name": "Terry Crews",
-      "GUID": "f0698f82-2b30-4d97-bc9c-b22cc368a4dc"
-    },
-    "ticketinfo": {
-      "URL": "",
-      "number": ""
-    }
-  },
-  "labelDiff": {
-    "unassignedLabels": [],
-    "assignedLabels": []
-  }
-}, {
-  headers: {
-    "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU=",
-    "Content-Type": "application/x-www-form-urlencoded"
-  }
-}).then((res) => {
-  console.log(res)
-}).catch((err) => {
-  console.log(err)
-})
