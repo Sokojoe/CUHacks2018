@@ -171,11 +171,12 @@ function handleAlert(alertData) {
 
 function sendAllAlert(pendingAlarm) {
   var alarmData = pendingAlarm.data
-  sysAdmins.forEach((entry) => {
-    var message = "Alert: " + alarmData["text"] + "\n" + "AlertId: " + alarmData["id"] + "\n" + "Device: " + alarmData["device"]["name"] + "\n" + "Severity: " + alarmData["severity"] + "\n\n" + "Are you able to handle this task " + entry.name + " ?"
+  Object.keys(sysAdmins).map(key => {
+    var message = "Alert: " + alarmData["text"] + "\n" + "AlertId: " + alarmData["id"] + "\n" + "Device: " + alarmData["device"]["name"] + "\n" + "Severity: " + alarmData["severity"] + "\n\n" +
+      "Are you able to handle this task " + sysAdmins[key].name + " ?"
     tel.sms({
       originator: originalPhonenum,
-      recipient: entry.number,
+      recipient: sysAdmins[key].number,
       body: message
     }).catch((err) => {
       console.log(err);
