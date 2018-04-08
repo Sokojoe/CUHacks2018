@@ -3,9 +3,7 @@ const app = express()
 const axios = require('axios')
 const request = require('request-promise')
 app.use(express.json());
-const lib = require('lib')({
-  token: "FpBaXmJxDDHDcfHKlHPKQQVFr29ccs3JtIJh8yOKlp2wNWRsEN3s6MCN-9XqP8SY"
-});
+const lib = require('lib')({token: "FpBaXmJxDDHDcfHKlHPKQQVFr29ccs3JtIJh8yOKlp2wNWRsEN3s6MCN-9XqP8SY"});
 const tel = lib.messagebird.tel['@0.0.21'];
 const originalPhonenum = "12048170807"
 
@@ -45,52 +43,56 @@ var pendingAlarms = []; // Array of pendingAlarms
 
 var alerts = {};
 
+// Send Martello POST req
 app.post('/acceptedAlert', function(req, res) {
   var alarmID = req.body.alarmID
   var contains = false;
+  // Verify that the alarm is pending
   pendingAlarms.forEach((alarm) => {
     console.log("Comparing:" + alarm.id.toString() + ":" + alarmID);
     if (alarm.id.toString() == alarmID) {
       contains = true;
     }
   })
+
   if (contains) {
     //Get sysAdmin info
     console.log("Phone number: " + req.body.num);
     console.log("sysAdmins: " + sysAdmins[req.body.num]);
     var currRecipient = sysAdmins[req.body.num]
     console.log(currRecipient);
-    // Assign a user to an alarm
-    // axios.put("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" + alarmID + "/updateTicketAndLabels/?user=3c91a75a-ce56-4f89-82b8-bdff12bfcbd1", {
-    //   headers: {
-    //     "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU=",
-    //     "Content-Type": "application/json"
-    //   },
-    //   data: {
-    //     "ticket": {
-    //       "status": "Assigned",
-    //       "assignee": {
-    //         "name": currRecipient.name,
-    //         "GUID": currRecipient.guid
-    //       },
-    //       "ticketinfo": {
-    //         "URL": "",
-    //         "number": ""
-    //       }
-    //     },
-    //     "labelDiff": {
-    //       "unassignedLabels": [],
-    //       "assignedLabels": []
-    //     }
-    //   }
-    // })
-
-    .then(() => {
+    // Post to Assign an user to an alarm
+    request({
+      url: "https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" + alarmID + "/updateTicketAndLabels/?user=3c91a75a-ce56-4f89-82b8-bdff12bfcbd1",
+      method: "PUT",
+      json: true,
+      body: {
+        "ticket": {
+          "status": "Assigned",
+          "assignee": {
+            "name": currRecipient.name,
+            "GUID": currRecipient.guid
+          },
+          "ticketinfo": {
+            "URL": "",
+            "number": ""
+          }
+        },
+        "labelDiff": {
+          "unassignedLabels": [],
+          "assignedLabels": []
+        }
+      },
+      headers: {
+        "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU=",
+        "Content-Type": "application/json"
+      }
+    }).then(function(parsedBody) {
+      console.log(parsedBody);
       res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
-    }).catch((err) => {
-      console.log(err)
+    }).catch(function(err) {
+      res.send('An error occured');
     });
-
   } else {
     console.log('No pendingAlarms with ID ' + alarmID);
     res.send('No pendingAlarms with ID ' + alarmID);
@@ -150,12 +152,7 @@ var checkAlerts = () => {
 
 function handleAlert(alertData) {
   //console.log(alertData)
-  pendingAlarms.push({
-    id: alertData.id,
-    accepted: false,
-    mock: true,
-    data: alertData
-  })
+  pendingAlarms.push({id: alertData.id, accepted: false, mock: true, data: alertData})
   //sendAllAlert(pendingAlarms[0])
 }
 
@@ -163,11 +160,7 @@ function sendAllAlert(pendingAlarm) {
   var alarmData = pendingAlarm.data
   sysAdmins.forEach((entry) => {
     var message = "Alert: " + alarmData["text"] + "\n" + "AlertId: " + alarmData["id"] + "\n" + "Device: " + alarmData["device"]["name"] + "\n" + "Severity: " + alarmData["severity"] + "\n\n" + "Are you able to handle this task " + entry.name + " ?"
-    tel.sms({
-      originator: originalPhonenum,
-      recipient: entry.number,
-      body: message
-    }).catch((err) => {
+    tel.sms({originator: originalPhonenum, recipient: entry.number, body: message}).catch((err) => {
       console.log(err);
     })
   })
