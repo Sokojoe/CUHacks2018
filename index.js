@@ -3,7 +3,9 @@ const app = express()
 const axios = require('axios')
 const request = require('request-promise')
 app.use(express.json());
-const lib = require('lib')({token: "FpBaXmJxDDHDcfHKlHPKQQVFr29ccs3JtIJh8yOKlp2wNWRsEN3s6MCN-9XqP8SY"});
+const lib = require('lib')({
+  token: "FpBaXmJxDDHDcfHKlHPKQQVFr29ccs3JtIJh8yOKlp2wNWRsEN3s6MCN-9XqP8SY"
+});
 const tel = lib.messagebird.tel['@0.0.21'];
 const originalPhonenum = "12048170807"
 
@@ -127,11 +129,10 @@ var servercode = () => {
     },
   }).then(function(response) {
     Object.keys(response).map(key => {
-       console.log(response[key]);
-       alerts[key] = response[key]
-       handleAlert(response[key])
-     })
-     setInterval(checkAlerts, 10000);
+      alerts[key] = response[key]
+      handleAlert(response[key])
+    })
+    setInterval(checkAlerts, 10000);
   }).catch(function(error) {
     console.log(error);
   });
@@ -159,7 +160,12 @@ var checkAlerts = () => {
 
 function handleAlert(alertData) {
   //console.log(alertData)
-  pendingAlarms.push({id: alertData.id, accepted: false, mock: true, data: alertData})
+  pendingAlarms.push({
+    id: alertData.id,
+    accepted: false,
+    mock: true,
+    data: alertData
+  })
   //sendAllAlert(pendingAlarms[0])
 }
 
@@ -167,7 +173,11 @@ function sendAllAlert(pendingAlarm) {
   var alarmData = pendingAlarm.data
   sysAdmins.forEach((entry) => {
     var message = "Alert: " + alarmData["text"] + "\n" + "AlertId: " + alarmData["id"] + "\n" + "Device: " + alarmData["device"]["name"] + "\n" + "Severity: " + alarmData["severity"] + "\n\n" + "Are you able to handle this task " + entry.name + " ?"
-    tel.sms({originator: originalPhonenum, recipient: entry.number, body: message}).catch((err) => {
+    tel.sms({
+      originator: originalPhonenum,
+      recipient: entry.number,
+      body: message
+    }).catch((err) => {
       console.log(err);
     })
   })
