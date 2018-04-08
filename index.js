@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const axios = require('axios')
+const request = require('request-promise')
 app.use(express.json());
 const lib = require('lib')({
   token: "FpBaXmJxDDHDcfHKlHPKQQVFr29ccs3JtIJh8yOKlp2wNWRsEN3s6MCN-9XqP8SY"
@@ -20,7 +21,7 @@ sysAdmins["17058082706"] = {
   name: "Joey",
   guid: "a07e4d8b-d64d-4551-80ec-1c7b592e08b0"
 }
-sysAdmins["14169488077"]= {
+sysAdmins["14169488077"] = {
   number: "14169488077",
   name: "Wesley",
   guid: "f0698f82-2b30-4d97-bc9c-b22cc368a4dc"
@@ -60,29 +61,31 @@ app.post('/acceptedAlert', function(req, res) {
     var currRecipient = sysAdmins[req.body.num]
     console.log(currRecipient);
     // Assign a user to an alarm
-    axios.put("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" + alarmID + "/updateTicketAndLabels/?user=3c91a75a-ce56-4f89-82b8-bdff12bfcbd1", {
-      headers: {
-        "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU=",
-        "Content-Type": "application/json"
-      },
-      body: {
-        "ticket": {
-          "status": "Assigned",
-          "assignee": {
-            "name": currRecipient.name,
-            "GUID": currRecipient.guid
-          },
-          "ticketinfo": {
-            "URL": "",
-            "number": ""
-          }
-        },
-        "labelDiff": {
-          "unassignedLabels": [],
-          "assignedLabels": []
-        }
-      }
-    }).then(() => {
+    // axios.put("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" + alarmID + "/updateTicketAndLabels/?user=3c91a75a-ce56-4f89-82b8-bdff12bfcbd1", {
+    //   headers: {
+    //     "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU=",
+    //     "Content-Type": "application/json"
+    //   },
+    //   data: {
+    //     "ticket": {
+    //       "status": "Assigned",
+    //       "assignee": {
+    //         "name": currRecipient.name,
+    //         "GUID": currRecipient.guid
+    //       },
+    //       "ticketinfo": {
+    //         "URL": "",
+    //         "number": ""
+    //       }
+    //     },
+    //     "labelDiff": {
+    //       "unassignedLabels": [],
+    //       "assignedLabels": []
+    //     }
+    //   }
+    // })
+
+    .then(() => {
       res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
     }).catch((err) => {
       console.log(err)
@@ -172,3 +175,30 @@ function sendAllAlert(pendingAlarm) {
 
 app.set('port', (process.env.PORT || 3000));
 app.listen(app.get('port'), servercode)
+
+axios("https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/27/updateTicketAndLabels/?user=3c91a75a-ce56-4f89-82b8-bdff12bfcbd1", {
+  "ticket": {
+    "status": "Assigned",
+    "assignee": {
+      "name": "Terry Crews",
+      "GUID": "f0698f82-2b30-4d97-bc9c-b22cc368a4dc"
+    },
+    "ticketinfo": {
+      "URL": "",
+      "number": ""
+    }
+  },
+  "labelDiff": {
+    "unassignedLabels": [],
+    "assignedLabels": []
+  }
+}, {
+  headers: {
+    "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU=",
+    "Content-Type": "application/x-www-form-urlencoded"
+  }
+}).then((res) => {
+  console.log(res)
+}).catch((err) => {
+  console.log(err)
+})
