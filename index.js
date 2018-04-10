@@ -8,7 +8,7 @@ const tel = lib.messagebird.tel['@0.0.21'];
 const originalPhonenum = "12048170807"
 
 app.get('/triggermock/:id', (req, res) => {
-  console.log(pendingAlarms[req.params.id]);
+  pendingAlarms[req.params.id].accepted = false;
   sendAllAlert(pendingAlarms[req.params.id])
   res.send("Mock event triggered")
 })
@@ -47,20 +47,18 @@ var alerts = {};
 app.post('/acceptedAlert', function(req, res) {
   var alarmID = req.body.alarmID
   var contains = false;
+  var unassigned = true;
   // Verify that the alarm is pending
   pendingAlarms.forEach((alarm) => {
-    console.log("Comparing:" + alarm.id.toString() + ":" + alarmID);
     if (alarm.id.toString() == alarmID) {
       contains = true;
+      unassigned = !alarm.accepted
     }
   })
 
-  if (contains) {
+  if (contains && unassigned) {
     //Get sysAdmin info
-    console.log("Phone number: " + req.body.num);
-    console.log("sysAdmins: " + sysAdmins[req.body.num]);
     var currRecipient = sysAdmins[req.body.num]
-    console.log(currRecipient);
     // Post to Assign an user to an alarm
     request({
       url: "https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" + alarmID + "/updateTicketAndLabels/?user=3c91a75a-ce56-4f89-82b8-bdff12bfcbd1",
@@ -88,12 +86,18 @@ app.post('/acceptedAlert', function(req, res) {
         "Content-Type": "application/json"
       }
     }).then(function(parsedBody) {
-      console.log(parsedBody);
-      res.send('currRecipient.name + accepted the request(' + alarmID + ').' );
+      res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
+      pendingAlarms.forEach((alarm) => {
+        if (alarm.id.toString() == alarmID) {
+          alarm.accepted = true;
+        }
+      })
     }).catch(function(err) {
-      console.log(err);
       res.send('An error occured');
     });
+  } else if (contains) {
+    console.log('The alarm with ID ' + alarmID + ' has already been accepted.');
+    res.send('The alarm with ID ' + alarmID + ' has already been accepted.');
   } else {
     console.log('No pending alarms with ID ' + alarmID);
     res.send('No pending alarms with ID ' + alarmID);
@@ -125,15 +129,14 @@ var servercode = () => {
     method: "GET",
     json: true,
     headers: {
-      "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU=",
-    },
+      "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
+    }
   }).then(function(response) {
     Object.keys(response).map(key => {
-       console.log(response[key]);
-       alerts[key] = response[key]
-       handleAlert(response[key])
-     })
-     setInterval(checkAlerts, 10000);
+      alerts[key] = response[key]
+      handleAlert(response[key])
+    })
+    setInterval(checkAlerts, 10000);
   }).catch(function(error) {
     console.log(error);
   });
@@ -145,8 +148,8 @@ var checkAlerts = () => {
     method: "GET",
     json: true,
     headers: {
-      "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU=",
-    },
+      "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
+    }
   }).then(function(response) {
     for (var key in response) {
       if (alerts[key] == undefined) {
@@ -161,15 +164,17 @@ var checkAlerts = () => {
 
 function handleAlert(alertData) {
   //console.log(alertData)
-  pendingAlarms.push({id: alertData.id, accepted: false, mock: true, data: alertData})
-  //sendAllAlert(pendingAlarms[0])
+  if (alertData.ticket.status == "New") {
+    pendingAlarms.push({id: alertData.id, accepted: false, mock: true, data: alertData})
+    console.log("Added " + alertData.id + " to queue of unassigned tickets");
+  }
 }
 
 function sendAllAlert(pendingAlarm) {
   var alarmData = pendingAlarm.data
-  sysAdmins.forEach((entry) => {
-    var message = "Alert: " + alarmData["text"] + "\n" + "AlertId: " + alarmData["id"] + "\n" + "Device: " + alarmData["device"]["name"] + "\n" + "Severity: " + alarmData["severity"] + "\n\n" + "Are you able to handle this task " + entry.name + " ?"
-    tel.sms({originator: originalPhonenum, recipient: entry.number, body: message}).catch((err) => {
+  Object.keys(sysAdmins).map(key => {
+    var message = "Alert: " + alarmData["text"] + "\n" + "AlertId: " + alarmData["id"] + "\n" + "Device: " + alarmData["device"]["name"] + "\n" + "Severity: " + alarmData["severity"] + "\n\n" + "Are you able to handle this task " + sysAdmins[key].name + " ?"
+    tel.sms({originator: originalPhonenum, recipient: sysAdmins[key].number, body: message}).catch((err) => {
       console.log(err);
     })
   })
