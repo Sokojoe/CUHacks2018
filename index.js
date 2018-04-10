@@ -55,12 +55,12 @@ app.post('/acceptedAlert', function(req, res) {
       unassigned = !alarm.accepted
     }
   })
-  if (sysAdmins[req.body.num] == null){
-    console.log('\n' + req.body.alarmID + ' tried to accept an alarm ticket. Request failed since they are not authorized.');
+  console.log(sysAdmins[req.body.num]);
+  console.log(sysAdmins[req.body.num] == null);
+  if (sysAdmins[req.body.num] == null) {
+    console.log('\n' + req.body.num + ' tried to accept an alarm ticket. Request failed since they are not authorized.');
     res.send('You are not an authorized Administrator.');
-    return;
-  }
-  if (contains && unassigned) {
+  } else if (contains && unassigned) {
     //Get sysAdmin info
     var currRecipient = sysAdmins[req.body.num]
     // Post to Assign an user to an alarm
