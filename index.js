@@ -24,20 +24,20 @@ sysAdmins["14169488077"] = {
   name: "Wesley",
   guid: "f0698f82-2b30-4d97-bc9c-b22cc368a4dc"
 }
-// sysAdmins.push({
-//   "16132553982": {
-//     number: "16132553982",
-//     name: "Helen",
-//     guid: "68c4c1e5-8347-4327-8361-1e8fffd214d5"
-//   }
-// });
-// sysAdmins.push({
-//   "16132631474": {
-//     number: "16132631474",
-//     name: "Steven",
-//     guid: "968a1d3c-1b88-4812-b15b-9a554324c7cf"
-//   }
-// });
+sysAdmins.push({
+  "16132553982": {
+    number: "16132553982",
+    name: "Helen",
+    guid: "68c4c1e5-8347-4327-8361-1e8fffd214d5"
+  }
+});
+sysAdmins.push({
+  "16132631474": {
+    number: "16132631474",
+    name: "Steven",
+    guid: "968a1d3c-1b88-4812-b15b-9a554324c7cf"
+  }
+});
 
 var pendingAlarms = []; // Array of pendingAlarms
 
@@ -55,8 +55,7 @@ app.post('/acceptedAlert', function(req, res) {
       unassigned = !alarm.accepted
     }
   })
-  console.log(sysAdmins[req.body.num]);
-  console.log(sysAdmins[req.body.num] == null);
+
   if (sysAdmins[req.body.num] == null) {
     console.log('\n' + req.body.num + ' tried to accept an alarm ticket. Request failed since they are not authorized.');
     res.send('You are not an authorized Administrator.');
@@ -111,12 +110,17 @@ app.post('/acceptedAlert', function(req, res) {
 app.post('/deniedAlert', function(req, res) {
   let alarmID = req.body.alarmID
   var contains = false;
+  var unassigned = true;
   pendingAlarms.forEach((alarm) => {
-    if (alarm.id == alarmID) {
+    if (alarm.id.toString() == alarmID) {
       contains = true;
+      unassigned = !alarm.accepted
     }
   })
-  if (contains) {
+  if (sysAdmins[req.body.num] == null) {
+    console.log('\n' + req.body.num + ' tried to accept an alarm ticket. Request failed since they are not authorized.');
+    res.send('You are not an authorized Administrator.');
+  } else if (contains && unassigned) {
     console.log(currRecipient.name + ' denied the alarm(' + alarmID + ').');
     res.send(currRecipient.name + ' denied the alarm(' + alarmID + ').');
   } else {
