@@ -101,8 +101,7 @@ app.post('/acceptedAlert', function(req, res) {
   } else if (contains) {
     console.log("The alarm has already been accepted.");
     res.send('No pendingAlarms with ID ' + alarmID);
-  }
-  else {
+  } else {
     console.log('No pendingAlarms with ID ' + alarmID);
     res.send('No pendingAlarms with ID ' + alarmID);
   }
@@ -132,14 +131,14 @@ var servercode = () => {
     method: "GET",
     json: true,
     headers: {
-      "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU=",
-    },
+      "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
+    }
   }).then(function(response) {
     Object.keys(response).map(key => {
-       alerts[key] = response[key]
-       handleAlert(response[key])
-     })
-     setInterval(checkAlerts, 10000);
+      alerts[key] = response[key]
+      handleAlert(response[key])
+    })
+    setInterval(checkAlerts, 10000);
   }).catch(function(error) {
     console.log(error);
   });
@@ -151,8 +150,8 @@ var checkAlerts = () => {
     method: "GET",
     json: true,
     headers: {
-      "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU=",
-    },
+      "Authorization": "Basic dGVhbTFAbWFydGVsbG90ZWNoLmNvbTpwaW5lYXBwbGU="
+    }
   }).then(function(response) {
     for (var key in response) {
       if (alerts[key] == undefined) {
@@ -175,9 +174,9 @@ function handleAlert(alertData) {
 
 function sendAllAlert(pendingAlarm) {
   var alarmData = pendingAlarm.data
-  sysAdmins.forEach((entry) => {
-    var message = "Alert: " + alarmData["text"] + "\n" + "AlertId: " + alarmData["id"] + "\n" + "Device: " + alarmData["device"]["name"] + "\n" + "Severity: " + alarmData["severity"] + "\n\n" + "Are you able to handle this task " + entry.name + " ?"
-    tel.sms({originator: originalPhonenum, recipient: entry.number, body: message}).catch((err) => {
+  Object.keys(sysAdmins).map(key => {
+    var message = "Alert: " + alarmData["text"] + "\n" + "AlertId: " + alarmData["id"] + "\n" + "Device: " + alarmData["device"]["name"] + "\n" + "Severity: " + alarmData["severity"] + "\n\n" + "Are you able to handle this task " + sysAdmins[key].name + " ?"
+    tel.sms({originator: originalPhonenum, recipient: sysAdmins[key].number, body: message}).catch((err) => {
       console.log(err);
     })
   })
