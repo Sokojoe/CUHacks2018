@@ -90,7 +90,7 @@ app.post('/acceptedAlert', function(req, res) {
         "Content-Type": "application/json"
       }
     }).then(function(parsedBody) {
-      res.send('currRecipient.name + accepted the alarm(' + alarmID + ').');
+      res.send(currRecipient.name + 'accepted the alarm(' + alarmID + ').');
       pendingAlarms.forEach((alarm) => {
         if (alarm.id.toString() == alarmID) {
           alarm.accepted = true;
@@ -117,8 +117,8 @@ app.post('/deniedAlert', function(req, res) {
     }
   })
   if (contains) {
-    console.log('Server denied the request(' + alarmID + ') from ' + req.body.num);
-    res.send('Server denied the request(' + alarmID + ') from ' + req.body.num);
+    console.log(currRecipient.name + 'denied the alarm(' + alarmID + ').');
+    res.send(currRecipient.name + 'denied the alarm(' + alarmID + ').');
   } else {
     console.log('No pendingAlarms with ID ' + alarmID);
     res.send('No pendingAlarms with ID ' + alarmID);
