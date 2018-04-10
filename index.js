@@ -89,28 +89,29 @@ app.post('/acceptedAlert', function(req, res) {
       }
     }).then(function(parsedBody) {
       console.log(parsedBody);
-      res.send('Accepted the request(' + alarmID + ') from ' + req.body.num);
+      res.send('currRecipient.name + accepted the request(' + alarmID + ').' );
     }).catch(function(err) {
       console.log(err);
       res.send('An error occured');
     });
   } else {
-    console.log('No pendingAlarms with ID ' + alarmID);
-    res.send('No pendingAlarms with ID ' + alarmID);
+    console.log('No pending alarms with ID ' + alarmID);
+    res.send('No pending alarms with ID ' + alarmID);
   }
 });
 
 app.post('/deniedAlert', function(req, res) {
   let alarmID = req.body.alarmID
   var contains = false;
+  var currRecipient = sysAdmins[req.body.num]
   pendingAlarms.forEach((alarm) => {
     if (alarm.id == alarmID) {
       contains = true;
     }
   })
   if (contains) {
-    console.log('Denied the request(' + alarmID + ') from ' + req.body.num);
-    res.send('Denied the request(' + alarmID + ') from ' + req.body.num);
+    console.log('currRecipient.name + denied the alarm(' + alarmID + ').');
+    res.send('currRecipient.name + denied the alarm(' + alarmID + ').');
   } else {
     console.log('No pendingAlarms with ID ' + alarmID);
     res.send('No pendingAlarms with ID ' + alarmID);
