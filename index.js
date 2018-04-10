@@ -90,7 +90,6 @@ app.post('/acceptedAlert', function(req, res) {
         "Content-Type": "application/json"
       }
     }).then(function(parsedBody) {
-      res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
       res.send('currRecipient.name + accepted the alarm(' + alarmID + ').');
       pendingAlarms.forEach((alarm) => {
         if (alarm.id.toString() == alarmID) {
