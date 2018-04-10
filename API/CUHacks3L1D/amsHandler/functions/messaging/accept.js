@@ -3,6 +3,7 @@ const lib = require('lib')({
 })
 const send = require('../../helpers/send.js')
 const axios = require('axios')
+//const request = require('../../../../../request-promise')
 /**
  * MORE handler, responds if user texts "more"
  *  (or any uppercase variation like "MORE")
@@ -14,10 +15,10 @@ const axios = require('axios')
  */
 module.exports = async(sender = 'local', receiver = '', message = '', createdDatetime = '', context) => {
   // Callback to get active request info
-  let res = await axios.post('https://fathomless-retreat-64446.herokuapp.com/deniedAlert', {
+  let res = await axios.post('https://tex-alert.herokuapp.com/acceptedAlert', {
     "num": sender,
     "alarmID": message.split(" ")[1]
   });
   console.log(res.data);
-  return send(receiver, sender, "You have accepted alarm(" + message.split(" ")[1] + ")")
+  return send(receiver, sender, res.data)
 }

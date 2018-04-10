@@ -14,10 +14,10 @@ const axios = require('axios')
  */
 module.exports = async(sender = 'local', receiver = '', message = '', createdDatetime = '', context) => {
   // Callback to get active request info
-  let res = await axios.post('https://fathomless-retreat-64446.herokuapp.com/deniedAlert', {
+  let res = await axios.post('https://tex-alert.herokuapp.com/deniedAlert', {
     "num": sender,
     "alarmID": message.split(" ")[1]
   });
   console.log(res.data);
-  return send(receiver, sender, "You have denied alarm(" + message.split(" ")[1] + ")")
+  return send(receiver, sender, res.data)
 }

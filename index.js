@@ -58,10 +58,7 @@ app.post('/acceptedAlert', function(req, res) {
 
   if (contains && unassigned) {
     //Get sysAdmin info
-    console.log("Phone number: " + req.body.num);
-    console.log("sysAdmins: " + sysAdmins[req.body.num]);
     var currRecipient = sysAdmins[req.body.num]
-    console.log(currRecipient);
     // Post to Assign an user to an alarm
     request({
       url: "https://hackathon.sipseller.net/central/rest/devices/7aa4fb26-5a53-4677-a575-8623e87ba76b/alarms/" + alarmID + "/updateTicketAndLabels/?user=3c91a75a-ce56-4f89-82b8-bdff12bfcbd1",
@@ -99,8 +96,8 @@ app.post('/acceptedAlert', function(req, res) {
       res.send('An error occured');
     });
   } else if (contains) {
-    console.log("The alarm has already been accepted.");
-    res.send('No pendingAlarms with ID ' + alarmID);
+    console.log('The alarm with ID ' + alarmID + ' has already been accepted.');
+    res.send('The alarm with ID ' + alarmID + ' has already been accepted.');
   } else {
     console.log('No pendingAlarms with ID ' + alarmID);
     res.send('No pendingAlarms with ID ' + alarmID);
