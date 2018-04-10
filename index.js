@@ -8,7 +8,7 @@ const tel = lib.messagebird.tel['@0.0.21'];
 const originalPhonenum = "12048170807"
 
 app.get('/triggermock/:id', (req, res) => {
-  console.log(pendingAlarms[req.params.id]);
+  pendingAlarms[req.params.id].accepted = false;
   sendAllAlert(pendingAlarms[req.params.id])
   res.send("Mock event triggered")
 })
@@ -47,15 +47,16 @@ var alerts = {};
 app.post('/acceptedAlert', function(req, res) {
   var alarmID = req.body.alarmID
   var contains = false;
+  var unassigned = true;
   // Verify that the alarm is pending
   pendingAlarms.forEach((alarm) => {
-    console.log("Comparing:" + alarm.id.toString() + ":" + alarmID);
     if (alarm.id.toString() == alarmID) {
       contains = true;
+      unassigned = !alarm.accepted
     }
   })
 
-  if (contains) {
+  if (contains && unassigned) {
     //Get sysAdmin info
     console.log("Phone number: " + req.body.num);
     console.log("sysAdmins: " + sysAdmins[req.body.num]);
@@ -88,12 +89,20 @@ app.post('/acceptedAlert', function(req, res) {
         "Content-Type": "application/json"
       }
     }).then(function(parsedBody) {
-      console.log(parsedBody);
       res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
+      pendingAlarms.forEach((alarm) => {
+        if (alarm.id.toString() == alarmID) {
+          alarm.accepted = true;
+        }
+      })
     }).catch(function(err) {
       res.send('An error occured');
     });
-  } else {
+  } else if (contains) {
+    console.log("The alarm has already been accepted.");
+    res.send('No pendingAlarms with ID ' + alarmID);
+  }
+  else {
     console.log('No pendingAlarms with ID ' + alarmID);
     res.send('No pendingAlarms with ID ' + alarmID);
   }
@@ -127,7 +136,6 @@ var servercode = () => {
     },
   }).then(function(response) {
     Object.keys(response).map(key => {
-       console.log(response[key]);
        alerts[key] = response[key]
        handleAlert(response[key])
      })
@@ -159,8 +167,10 @@ var checkAlerts = () => {
 
 function handleAlert(alertData) {
   //console.log(alertData)
-  pendingAlarms.push({id: alertData.id, accepted: false, mock: true, data: alertData})
-  //sendAllAlert(pendingAlarms[0])
+  if (alertData.ticket.status == "New") {
+    pendingAlarms.push({id: alertData.id, accepted: false, mock: true, data: alertData})
+    console.log("Added " + alertData.id + " to queue of unassigned tickets");
+  }
 }
 
 function sendAllAlert(pendingAlarm) {
