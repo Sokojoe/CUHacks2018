@@ -121,6 +121,7 @@ app.post('/deniedAlert', function(req, res) {
     console.log('\n' + req.body.num + ' tried to accept an alarm ticket. Request failed since they are not authorized.');
     res.send('You are not an authorized Administrator.');
   } else if (contains && unassigned) {
+    var currRecipient = sysAdmins[req.body.num]
     console.log(currRecipient.name + ' denied the alarm(' + alarmID + ').');
     res.send(currRecipient.name + ' denied the alarm(' + alarmID + ').');
   } else {
