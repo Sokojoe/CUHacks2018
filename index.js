@@ -89,8 +89,9 @@ app.post('/acceptedAlert', function(req, res) {
       }
     }).then(function(parsedBody) {
       console.log(parsedBody);
-      res.send('Server accepted the request(' + alarmID + ') from ' + req.body.num);
+      res.send('Accepted the request(' + alarmID + ') from ' + req.body.num);
     }).catch(function(err) {
+      console.log(err);
       res.send('An error occured');
     });
   } else {
@@ -108,8 +109,8 @@ app.post('/deniedAlert', function(req, res) {
     }
   })
   if (contains) {
-    console.log('Server denied the request(' + alarmID + ') from ' + req.body.num);
-    res.send('Server denied the request(' + alarmID + ') from ' + req.body.num);
+    console.log('Denied the request(' + alarmID + ') from ' + req.body.num);
+    res.send('Denied the request(' + alarmID + ') from ' + req.body.num);
   } else {
     console.log('No pendingAlarms with ID ' + alarmID);
     res.send('No pendingAlarms with ID ' + alarmID);
