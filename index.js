@@ -55,7 +55,11 @@ app.post('/acceptedAlert', function(req, res) {
       unassigned = !alarm.accepted
     }
   })
-
+  if (sysAdmin[req.body.num == null]){
+    console.log('\n' + req.body.alarmID + ' tried to accept an alarm ticket. Request failed since they are not authorized.');
+    res.send('You are not an authorized Administrator.');
+    return;
+  }
   if (contains && unassigned) {
     //Get sysAdmin info
     var currRecipient = sysAdmins[req.body.num]
@@ -99,23 +103,22 @@ app.post('/acceptedAlert', function(req, res) {
     console.log('The alarm with ID ' + alarmID + ' has already been accepted.');
     res.send('The alarm with ID ' + alarmID + ' has already been accepted.');
   } else {
-    console.log('No pending alarms with ID ' + alarmID);
-    res.send('No pending alarms with ID ' + alarmID);
+    console.log('No pendingAlarms with ID ' + alarmID);
+    res.send('No pendingAlarms with ID ' + alarmID);
   }
 });
 
 app.post('/deniedAlert', function(req, res) {
   let alarmID = req.body.alarmID
   var contains = false;
-  var currRecipient = sysAdmins[req.body.num]
   pendingAlarms.forEach((alarm) => {
     if (alarm.id == alarmID) {
       contains = true;
     }
   })
   if (contains) {
-    console.log('currRecipient.name + denied the alarm(' + alarmID + ').');
-    res.send('currRecipient.name + denied the alarm(' + alarmID + ').');
+    console.log('Server denied the request(' + alarmID + ') from ' + req.body.num);
+    res.send('Server denied the request(' + alarmID + ') from ' + req.body.num);
   } else {
     console.log('No pendingAlarms with ID ' + alarmID);
     res.send('No pendingAlarms with ID ' + alarmID);
