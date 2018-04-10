@@ -55,7 +55,7 @@ app.post('/acceptedAlert', function(req, res) {
       unassigned = !alarm.accepted
     }
   })
-  if (sysAdmins[req.body.num == null]){
+  if (sysAdmins[req.body.num] == null){
     console.log('\n' + req.body.alarmID + ' tried to accept an alarm ticket. Request failed since they are not authorized.');
     res.send('You are not an authorized Administrator.');
     return;
@@ -103,8 +103,8 @@ app.post('/acceptedAlert', function(req, res) {
     console.log('The alarm with ID ' + alarmID + ' has already been accepted.');
     res.send('The alarm with ID ' + alarmID + ' has already been accepted.');
   } else {
-    console.log('No pendingAlarms with ID ' + alarmID);
-    res.send('No pendingAlarms with ID ' + alarmID);
+    console.log('No pending alarms with ID ' + alarmID);
+    res.send('No pending alarms with ID ' + alarmID);
   }
 });
 
@@ -120,8 +120,8 @@ app.post('/deniedAlert', function(req, res) {
     console.log(currRecipient.name + ' denied the alarm(' + alarmID + ').');
     res.send(currRecipient.name + ' denied the alarm(' + alarmID + ').');
   } else {
-    console.log('No pendingAlarms with ID ' + alarmID);
-    res.send('No pendingAlarms with ID ' + alarmID);
+    console.log('No pending alarms with ID ' + alarmID);
+    res.send('No pending alarms with ID ' + alarmID);
   }
 });
 
